@@ -1,10 +1,5 @@
 
-
-function rateFilms() {
-    console.log("Looking for films");
-    var filmIdentifiers = $('.flag:contains("Film")')
-    var filmElements = filmIdentifiers.parent()
-    console.dir(filmElements)
+function appendRating(filmElements) {
     filmElements.each(function (index, filmElement) {
         var jqueryFilmElem = $(filmElement)
         var title = $(filmElement).find('a').attr('title')
@@ -14,11 +9,21 @@ function rateFilms() {
             var rating = data[0].rating
             console.log(title + ", " + rating + " " + imdburl)
             var imageurl = chrome.extension.getURL('imdb-small.png')
-            var html = ['<a href="',imdburl,'"><img src="',imageurl,'"></a> ',
-                        '<a href="',imdburl,'"><span class="title">',rating,'</span></a>'].join('')
+            $(filmElements).css('display', 'inline')
+            var html = ['<a style="display:inline" href="',imdburl,'"><img src="',imageurl,'"></a> ',
+                        '<a style="display:inline" href="',imdburl,'"><span style="display:inline" class="title">',rating,'</span></a>'].join('')
             jqueryFilmElem.append(html);
         });
     });
+}
+
+function rateFilms() {
+    //Film elements with a FILM flag next to them
+    var flaggedFilmElements = $('.flag:contains("Film")').parent()
+    appendRating(flaggedFilmElements)
+    //Films displayed in all categories view
+    var allCategoriesFilmElements = $('a.episode-category:contains(Films)').parent().find('h3')
+    appendRating(allCategoriesFilmElements)
 };
 
 rateFilms();

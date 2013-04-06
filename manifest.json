@@ -1,0 +1,15 @@
+{
+  "manifest_version": 2,
+
+  "name": "iPlayer IMDB film ratings",
+  "description": "Displays the IMDB rating for films on iPlayer along with a link to their page on IMDB.",
+  "version": "1.0",
+
+  "content_scripts": [
+    {
+      "matches": ["http://www.bbc.co.uk/iplayer/*"],
+      "js": ["jquery-1.9.1.min.js", "iplayerimdb.js"]
+    }
+  ],
+  "web_accessible_resources": ["imdb-small.png"]
+}

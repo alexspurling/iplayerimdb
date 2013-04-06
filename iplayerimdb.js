@@ -27,3 +27,17 @@ function rateFilms() {
 };
 
 rateFilms();
+
+$( "div.category-list-body" ).bind(
+    "DOMNodeRemoved",
+    function( objEvent ){
+        console.log("Node removed: ", objEvent.target)
+    }
+);
+
+$( "div.category-list-body" ).bind(
+    "DOMNodeInserted",
+    function( objEvent ){
+        console.log("Node inserted: ", objEvent.target)
+    }
+);

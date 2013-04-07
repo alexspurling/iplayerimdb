@@ -26,18 +26,20 @@ function rateFilms() {
     appendRating(allCategoriesFilmElements)
 };
 
-rateFilms();
-
-$( "div.category-list-body" ).bind(
-    "DOMNodeRemoved",
-    function( objEvent ){
-        console.log("Node removed: ", objEvent.target)
-    }
-);
+function rateFilmCategory(categoryBody) {
+    var categoryFilmElements = categoryBody.find('h3')
+    appendRating(categoryFilmElements)
+};
 
 $( "div.category-list-body" ).bind(
     "DOMNodeInserted",
     function( objEvent ){
         console.log("Node inserted: ", objEvent.target)
+        var filmLink = $(objEvent.target).find('.show-all[href$="films"]')
+        if (filmLink.length > 0) {
+            rateFilmCategory(filmLink.parent())
+        }
     }
 );
+
+rateFilms();

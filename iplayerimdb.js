@@ -8,29 +8,28 @@ function cacheRating(title, rating, imdburl) {
     ratingCache[title] = {'rating': rating, 'imdburl': imdburl};
 }
 
-function appendRating(rating, imdburl, filmElement) {
-    $(filmElement).find('a').css('display', 'block')
+function appendRating(rating, imdburl, filmElement, marginTop) {
     var imageurl = chrome.extension.getURL('imdb-small.png')
-    var html = ['<a style="display:inline" href="',imdburl,'"><img src="',imageurl,'"></a> ',
-                '<a style="display:inline" href="',imdburl,'"><span style="display:inline" class="title">',rating,'</span></a>'].join('')
+    var html = ['<a style="display:inline" target="_blank" href="',imdburl,'"><img style="margin-top:',marginTop,'; margin-right:5px" src="',imageurl,'">',
+                '<span class="title" style="display:inline; font-size:1.1em">',rating,'</span></a>'].join('')
     $(filmElement).append(html);
 }
 
-function getAndAppendRating(filmElements) {
+function getAndAppendRating(filmElements, marginTop) {
     filmElements.each(function (index, filmElement) {
         var title = $(filmElement).find('a').attr('title')
         console.log("Loading film data for " + title)
 
         var cachedRating = getRatingFromCache(title)
         if (cachedRating) {
-            appendRating(cachedRating.rating, cachedRating.imdburl, filmElement);
+            appendRating(cachedRating.rating, cachedRating.imdburl, filmElement, marginTop);
         }else{
             $.getJSON('http://imdbapi.org/', {'q':title}).done(function (data) {
                 var ratingNum = new Number(data[0].rating)
                 var rating = ratingNum.toPrecision(2)
                 var imdburl = data[0].imdb_url
                 cacheRating(title, rating, imdburl)
-                appendRating(rating, imdburl, filmElement)
+                appendRating(rating, imdburl, filmElement, marginTop)
             });
         }
     });
@@ -39,15 +38,15 @@ function getAndAppendRating(filmElements) {
 function rateFilms() {
     //Film elements with a FILM flag next to them
     var flaggedFilmElements = $('.flag:contains("Film")').parent()
-    getAndAppendRating(flaggedFilmElements)
+    getAndAppendRating(flaggedFilmElements, '0px')
     //Films displayed in all categories view
     var allCategoriesFilmElements = $('a.episode-category:contains(Films)').parent().find('h3')
-    getAndAppendRating(allCategoriesFilmElements)
+    getAndAppendRating(allCategoriesFilmElements, '0px')
 };
 
 function rateFilmCategory(categoryBody) {
     var categoryFilmElements = categoryBody.find('h3')
-    getAndAppendRating(categoryFilmElements)
+    getAndAppendRating(categoryFilmElements, '0px')
 };
 
 function getEpisodeData() {
@@ -105,7 +104,6 @@ function loadFilmRegistry() {
 $("div.category-list-body").bind(
     "DOMNodeInserted",
     function(objEvent){
-        console.log("Node inserted: ", objEvent.target)
         var filmLink = $(objEvent.target).find('.show-all[href$="films"]')
         if (filmLink.length > 0) {
             rateFilmCategory(filmLink.parent())
@@ -120,8 +118,9 @@ $('body').on(
         var title = $(objEvent.target).find('a[title]').attr('title')
         if (title) {
             if (getRatingFromCache(title)) {
-                console.log("Yeah this title is cached: " + title)
-                getAndAppendRating($(objEvent.target).find('h1'));
+                var filmElement = $(objEvent.target).find('h1')
+                filmElement.find('a').css('display', 'block')
+                getAndAppendRating(filmElement, '4px');
             }
         }
     }

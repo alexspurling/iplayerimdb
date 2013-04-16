@@ -11,7 +11,7 @@ function cacheRating(title, rating, imdburl) {
 function appendRating(rating, imdburl, filmElement, marginTop) {
     var imageurl = chrome.extension.getURL('imdb-small.png')
     var html = ['<a style="display:inline" target="_blank" href="',imdburl,'"><img style="margin-top:',marginTop,'; margin-right:5px" src="',imageurl,'">',
-                '<span class="title" style="display:inline; font-size:1.1em">',rating,'</span><span style="display:inline; font-size:0.85em">/10</span></a>'].join('')
+                '<span class="title" style="display:inline; font-size:12px">',rating,'</span><span class="title" style="display:inline; font-size:11px">/10</span></a>'].join('')
     $(filmElement).append(html);
 }
 

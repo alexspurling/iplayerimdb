@@ -66,58 +66,6 @@ function rateFilmCategory(categoryBody) {
     getAndAppendRatingForElements(categoryFilmElements, '0px')
 };
 
-function getEpisodeData() {
-    console.log("iPlayer IMDB: Getting episode registry")
-    var scripts = $('script:contains("episodeRegistry")')
-    if (scripts) {
-        var script = scripts[0].innerHTML
-        var addDataCall = script.match(/episodeRegistry.addData\([\s\S]*?\);/)
-        if (addDataCall) {
-            var episodeData = addDataCall[0].match(/({[\s\S]*})/)
-            if (episodeData && episodeData.length == 2) {
-                try {
-                    var episodeJson = $.parseJSON(episodeData[1])
-                    console.log("iPlayer IMDB: Loaded episode registry")
-                    return episodeJson
-                }catch (err) {
-                    console.log("iPlayer IMDB: Error parsing episode registry: " + err)
-                }
-            }
-        }
-    }
-    console.log("iPlayer IMDB: Could not find episode registry")
-    return null;
-}
-
-function isFilm(episode) {
-    if (episode.categories) {
-        var filmCategories = episode.categories.filter(function (category) {
-            return category.title == 'Films'
-        });
-        return filmCategories.length > 0;
-    }
-    return false;
-}
-
-function getFilmsFromEpisodeData(episodeData) {
-    var filmTitles = []
-    episodeData.
-    $.each(episodeData, function (episodeKey, episode) {
-        if (isFilm(episode)) {
-            filmTitles.push(episode.complete_title)
-        }
-    });
-    console.log("Found films: ", filmTitles)
-    return filmTitles;
-}
-
-function loadFilmRegistry() {
-    var episodeData = getEpisodeData();
-    if (episodeData) {
-        var films = getFilmsFromEpisodeData(episodeData);
-    }
-}
-
 $("div.category-list-body").bind(
     "DOMNodeInserted",
     function(objEvent){
@@ -144,5 +92,3 @@ $('body').on(
 );
 
 rateFilms();
-
-loadFilmRegistry()

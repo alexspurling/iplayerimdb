@@ -20,7 +20,7 @@ function getAndAppendRating(filmElement, title, marginTop) {
     if (cachedRating) {
         appendRating(cachedRating.rating, cachedRating.imdburl, filmElement, marginTop);
     }else{
-        $.getJSON('http://imdbapi.org/', {'q':title}).done(function (data) {
+        $.getJSON('http://mymovieapi.com/', {'q':title}).done(function (data) {
             var ratingNum = new Number(data[0].rating)
             var rating = ratingNum.toPrecision(2)
             var imdburl = data[0].imdb_url

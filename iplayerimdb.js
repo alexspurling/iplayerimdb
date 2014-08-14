@@ -39,17 +39,6 @@ function getAndAppendRatingForElements(filmElements, marginTop) {
     });
 }
 
-function getAndAppendRatingForPopularFilms(filmElements, marginTop) {
-    filmElements.each(function (index, filmElement) {
-        var iplayerLink = $(filmElement).find('a').attr('href')
-        //Get the title from the link to the page for this Film as there is no
-        //title attribute set on these links for some reason
-        var title = iplayerLink.replace(/.*\/([^\/]*)\/$/,'$1').replace(/_/g,' ')
-        console.log("Loading film data for popular film: " + title)
-        getAndAppendRating(filmElement, title, marginTop)
-    });
-}
-
 function rateFilms() {
     //Films in the A-Z view
     var filmTitleElements = $('div.title').not('.top-title')
@@ -60,9 +49,6 @@ function rateFilms() {
     var featuredFilmElements = $('div.iplayer-stream').find('span.title')
     console.log("Featured film elements: ", featuredFilmElements)
     getAndAppendRatingForElements(featuredFilmElements, '0px')
-
-    var mostPopularInFilmsElements = $('h2:contains("Most popular in Films")').parent().find('h3')
-    getAndAppendRatingForPopularFilms(mostPopularInFilmsElements, '0px')
 };
 
 function rateFilmCategory(categoryBody) {

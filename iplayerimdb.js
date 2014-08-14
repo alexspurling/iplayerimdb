@@ -10,7 +10,8 @@ function cacheRating(title, rating, imdburl) {
 
 function appendRating(rating, imdburl, filmElement, marginTop) {
     var imageurl = chrome.extension.getURL('imdb-small.png')
-    var html = ['<a style="display:inline" target="_blank" href="',imdburl,'"><img style="margin-top:',marginTop,'; margin-right:5px; margin-bottom:0px" src="',imageurl,'">',
+    var html = ['<a class="change-loc-link" style="color:#fff" display:inline" target="_blank" href="',imdburl,'">',
+                '<img style="visibility:visible; width:31px; margin-top:',marginTop,'; margin-right:5px; margin-bottom:0px" src="',imageurl,'">',
                 '<span class="title" style="display:inline; font-size:12px">',rating,'</span><span class="title" style="display:inline; font-size:11px">/10</span></a>'].join('')
     $(filmElement).append(html);
 }
@@ -20,10 +21,10 @@ function getAndAppendRating(filmElement, title, marginTop) {
     if (cachedRating) {
         appendRating(cachedRating.rating, cachedRating.imdburl, filmElement, marginTop);
     }else{
-        $.getJSON('http://mymovieapi.com/', {'q':title}).done(function (data) {
-            var ratingNum = new Number(data[0].rating)
+        $.getJSON('http://www.omdbapi.com/', {'t':title}).done(function (data) {
+            var ratingNum = new Number(data.imdbRating)
             var rating = ratingNum.toPrecision(2)
-            var imdburl = data[0].imdb_url
+            var imdburl = 'http://www.imdb.com/title/' + data.imdbID + '/'
             cacheRating(title, rating, imdburl)
             appendRating(rating, imdburl, filmElement, marginTop)
         });
@@ -32,7 +33,7 @@ function getAndAppendRating(filmElement, title, marginTop) {
 
 function getAndAppendRatingForElements(filmElements, marginTop) {
     filmElements.each(function (index, filmElement) {
-        var title = $(filmElement).find('a').attr('title')
+        var title = filmElement.innerText
         console.log("Loading film data for " + title)
         getAndAppendRating(filmElement, title, marginTop)
     });
@@ -50,12 +51,15 @@ function getAndAppendRatingForPopularFilms(filmElements, marginTop) {
 }
 
 function rateFilms() {
-    //Film elements with a FILM flag next to them
-    var flaggedFilmElements = $('.flag:contains("Film")').parent()
-    getAndAppendRatingForElements(flaggedFilmElements, '0px')
-    //Films displayed in all categories view
-    var allCategoriesFilmElements = $('a.episode-category:contains(Films)').parent().find('h3')
-    getAndAppendRatingForElements(allCategoriesFilmElements, '0px')
+    //Films in the A-Z view
+    var filmTitleElements = $('div.title').not('.top-title')
+    console.log("Film elements: ", filmTitleElements)
+    getAndAppendRatingForElements(filmTitleElements, '0px')
+
+    //Films in the featured view
+    var featuredFilmElements = $('div.iplayer-stream').find('span.title')
+    console.log("Featured film elements: ", featuredFilmElements)
+    getAndAppendRatingForElements(featuredFilmElements, '0px')
 
     var mostPopularInFilmsElements = $('h2:contains("Most popular in Films")').parent().find('h3')
     getAndAppendRatingForPopularFilms(mostPopularInFilmsElements, '0px')
